@@ -1,4 +1,6 @@
 [![Build Status](https://api.travis-ci.com/ashraf-revo/chat.svg?token=isSqjppX5q1Rs3tWqGHs&branch=master)](https://travis-ci.com/ashraf-revo/chat)
+## do you want why it fail on travis [see](https://github.com/ashraf-revo/chat/wiki#notes)
+
 ## Chat 
 see documentation [here](https://github.com/ashraf-revo/chat/wiki)
 
