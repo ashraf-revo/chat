@@ -13,11 +13,11 @@ public class ChatServerTest {
 
     @Before
     public void init() {
-            try {
-                ChatServer.main(new String[]{});
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            try {
+////                ChatServer.main(new String[]{});
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
 
 
     }
