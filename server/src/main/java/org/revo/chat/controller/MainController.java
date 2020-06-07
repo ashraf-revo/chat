@@ -9,10 +9,12 @@ import org.revo.chat.services.EnvLoader;
 import org.revo.chat.services.Impl.InMemoryUserServiceImpl;
 import org.revo.chat.services.UserService;
 
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static org.revo.chat.server.Route.route;
+import static org.revo.chat.server.utils.Util.dumb;
 
 public class MainController {
     private final static UserService userService = new InMemoryUserServiceImpl(EnvLoader.getEnv().getUsers());
@@ -51,8 +53,11 @@ public class MainController {
         if (s.getPayload().getPayload().contains("-->")) {
             String[] split = s.getPayload().getPayload().split("-->");
             SessionRegistry.sendTo(split[0], split[1]);
-            Util.dumb(SessionRegistry.getUsername(s), split[1] + "\n", true);
+            dumb(SessionRegistry.getUsername(s), split[1] + "\n", true);
             if (s.getPayload().getPayload().contains("-->Bye Bye")) {
+                dumb(SessionRegistry.getUsername(s)+"-tally", Util.wordCount(SessionRegistry.getUsername(s)).toString(), false);
+                Map<String, Long> tally = Util.getTally(Util.readAllFiles(it -> !it.getFileName().toString().contains("-tally")));
+                dumb("chat-tally", tally.toString()+"\n", true);
                 SessionRegistry.close(s);
             }
         }

@@ -9,13 +9,16 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.nio.file.Files.isRegularFile;
+
 public class Util {
-    public static void dumb(String name, String message,boolean append) {
+    public static void dumb(String name, String message, boolean append) {
         try {
             Path dumb = Paths.get(System.getProperty("user.home"), "chat", name + ".dumb");
             File parent = dumb.getParent().toFile();
@@ -23,7 +26,7 @@ public class Util {
                 parent.mkdirs();
             }
             StandardOpenOption[] appends;
-            if (append&&dumb.toFile().exists()) {
+            if (append && dumb.toFile().exists()) {
                 appends = new StandardOpenOption[]{StandardOpenOption.APPEND};
             } else {
                 appends = new StandardOpenOption[]{};
@@ -41,7 +44,6 @@ public class Util {
         try (Stream<String> lines = Files.lines(path)) {
             return lines.map(s -> Arrays.asList(s.split(" "))).flatMap(Collection::stream)
                     .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-//            collect.entrySet().stream().sorted((o1, o2) -> o2.getValue().compareTo(o1.getValue())).forEach(s -> System.out.println(s.getKey() + "                  " + s.getValue()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -49,7 +51,7 @@ public class Util {
     }
 
     public static void main(String[] args) {
-        dumb("ashraf-tally",wordCount("ashraf").toString(),false);
+        dumb("ashraf-tally", wordCount("ashraf").toString(), false);
     }
 
 
@@ -118,4 +120,29 @@ public class Util {
         return txt != null && !txt.isEmpty();
     }
 
+    public static String readAllFiles(Predicate<Path> pathPredicate) {
+        try {
+            return Files.walk(Paths.get(System.getProperty("user.home"), "chat"))
+                    .filter(it -> isRegularFile(it))
+                    .filter(pathPredicate)
+                    .map(Util::readFile)
+                    .collect(Collectors.joining(" "));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public static Map<String, Long> getTally(String s) {
+        return Arrays.stream(s.split(" ")).collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+    }
+
+    private static String readFile(Path it) {
+        try {
+            return String.join(" ", Files.readAllLines(it));
+        } catch (IOException e) {
+            return "";
+        }
+
+    }
 }
