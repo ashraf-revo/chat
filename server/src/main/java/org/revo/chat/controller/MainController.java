@@ -52,13 +52,15 @@ public class MainController {
     private static final Consumer<Request<Message>> onSEND = (s) -> {
         if (s.getPayload().getPayload().contains("-->")) {
             String[] split = s.getPayload().getPayload().split("-->");
-            SessionRegistry.sendTo(split[0], split[1]);
-            dumb(SessionRegistry.getUsername(s), split[1] + "\n", true);
-            if (s.getPayload().getPayload().contains("-->Bye Bye")) {
-                dumb(SessionRegistry.getUsername(s)+"-tally", Util.wordCount(SessionRegistry.getUsername(s)).toString(), false);
-                Map<String, Long> tally = Util.getTally(Util.readAllFiles(it -> !it.getFileName().toString().contains("-tally")));
-                dumb("chat-tally", tally.toString()+"\n", true);
-                SessionRegistry.close(s);
+            if (split.length == 2) {
+                SessionRegistry.sendTo(split[0], split[1]);
+                dumb(SessionRegistry.getUsername(s), split[1] + "\n", true);
+                if (s.getPayload().getPayload().contains("-->Bye Bye")) {
+                    dumb(SessionRegistry.getUsername(s) + "-tally", Util.wordCount(SessionRegistry.getUsername(s)).toString(), false);
+                    Map<String, Long> tally = Util.getTally(Util.readAllFiles(it -> !it.getFileName().toString().contains("-tally")));
+                    dumb("chat-tally", tally.toString() + "\n", true);
+                    SessionRegistry.close(s);
+                }
             }
         }
     };
