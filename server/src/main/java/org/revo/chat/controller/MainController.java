@@ -32,26 +32,29 @@ public class MainController {
 
     public static Route[] when() {
         return new Route[]{
-                route("LOGIN", (s) -> {
-                    String[] split = s.getPayload().getPayload().split(":");
-                    userService.findByUsernameAndPasswordMatch(split[0], split[1]).ifPresent(it ->
-                            SessionRegistry.save(s, it.getUsername()));
-                }),
-                route("SEND", (s) -> {
-                    if (s.getPayload().getPayload().contains("-->")) {
-                        String[] split = s.getPayload().getPayload().split("-->");
-                        SessionRegistry.sendTo(split[0], split[1]);
-                        Util.dumb(SessionRegistry.getUsername(s), split[1] + "\n", true);
-                        if (s.getPayload().getPayload().contains("-->Bye Bye")) {
-                            SessionRegistry.close(s);
-                        }
-                    }
-
-                }),
+                route("LOGIN", onLOGIN),
+                route("SEND", onSEND),
                 route("ME", onME),
-                route("OPTIONS", (s) -> System.out.println("options"))
+                route("OPTIONS", onOPTIONS)
         };
     }
+
+
+    private static final Consumer<Request<Message>> onLOGIN = (s) -> {
+        String[] split = s.getPayload().getPayload().split(":");
+        userService.findByUsernameAndPasswordMatch(split[0], split[1]).ifPresent(it ->
+                SessionRegistry.save(s, it.getUsername()));
+    };
+    private static final Consumer<Request<Message>> onSEND = (s) -> {
+        if (s.getPayload().getPayload().contains("-->")) {
+            String[] split = s.getPayload().getPayload().split("-->");
+            SessionRegistry.sendTo(split[0], split[1]);
+            Util.dumb(SessionRegistry.getUsername(s), split[1] + "\n", true);
+            if (s.getPayload().getPayload().contains("-->Bye Bye")) {
+                SessionRegistry.close(s);
+            }
+        }
+    };
 
     private static final Consumer<Request<Message>> onME = (s) -> {
         Message message = new Message();
@@ -60,5 +63,7 @@ public class MainController {
         message.setPayload(SessionRegistry.getUsername(s));
         s.getSession().send(message);
     };
+
+    private final static Consumer<Request<Message>> onOPTIONS = (s) -> System.out.println("options");
 
 }
