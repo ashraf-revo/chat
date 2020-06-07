@@ -41,9 +41,7 @@ public class ChatClient {
 
     public synchronized void send(Message message) {
         if (message == null || message == Message.EMPTY) return;
-        delimiterBasedMessageEncoder.apply(message).forEach(it -> {
-            wtr.print(it);
-        });
+        delimiterBasedMessageEncoder.apply(message).forEach(it -> wtr.print(it));
         wtr.flush();
     }
 
