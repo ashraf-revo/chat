@@ -1,7 +1,6 @@
 package org.revo.chat.server;
 
 import org.revo.chat.server.message.Message;
-import org.revo.chat.server.session.Session;
 import org.revo.chat.server.session.SessionRegistry;
 import org.revo.chat.server.utils.Env;
 import reactor.core.CoreSubscriber;
@@ -53,7 +52,13 @@ public class Server extends Flux<Void> implements Closeable {
         this.disposable = this.processor.publish().autoConnect()
                 .filter(predicate).subscribe(it ->
                         this.routes.stream().filter(itx -> itx.getPath().trim().equals(it.getPayload().getPath().trim()))
-                                .forEach(v -> v.getFunction().accept(it))
+                                .forEach(v -> {
+                                    try {
+                                        v.getFunction().accept(it);
+                                    } catch (Exception e) {
+                                        System.out.println(e.getMessage());
+                                    }
+                                })
                 );
         this.generate.flatMap(r -> {
             ServerHandler serverHandler = new ServerHandler(processor, r);

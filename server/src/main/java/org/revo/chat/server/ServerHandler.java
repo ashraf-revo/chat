@@ -23,7 +23,11 @@ class ServerHandler implements Supplier<Publisher<Void>> {
     }
 
     public void accept(Message message) {
-        processor.onNext(new Request<>(message, this.session));
+        try {
+            processor.onNext(new Request<>(message, this.session));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override

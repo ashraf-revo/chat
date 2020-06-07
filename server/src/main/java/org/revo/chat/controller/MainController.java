@@ -52,7 +52,7 @@ public class MainController {
     private static final Consumer<Request<Message>> onSEND = (s) -> {
         if (s.getPayload().getPayload().contains("-->")) {
             String[] split = s.getPayload().getPayload().split("-->");
-            if (split.length == 2) {
+//            if (split.length == 2) {
                 SessionRegistry.sendTo(split[0], split[1]);
                 dumb(SessionRegistry.getUsername(s), split[1] + "\n", true);
                 if (s.getPayload().getPayload().contains("-->Bye Bye")) {
@@ -61,7 +61,7 @@ public class MainController {
                     dumb("chat-tally", tally.toString() + "\n", true);
                     SessionRegistry.close(s);
                 }
-            }
+//            }
         }
     };
 
