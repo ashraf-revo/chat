@@ -21,7 +21,7 @@ public class Session {
         this.socket = socket;
         this.sessionId = sessionId;
         try {
-            this.wtr = new PrintWriter(getSocket().getOutputStream());
+            this.wtr = new PrintWriter(socket.getOutputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }

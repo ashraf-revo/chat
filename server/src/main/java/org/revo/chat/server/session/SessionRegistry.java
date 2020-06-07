@@ -5,6 +5,7 @@ import org.revo.chat.server.message.Message;
 import org.revo.chat.utils.Defines;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,7 +40,10 @@ public class SessionRegistry {
     }
 
     public static Map<String, String> getSessionInfo(Request<Message> request) {
-        return sessionsBySessionIdRegistry.get(request.getSession().getSessionId()).getSessionInfo();
+        if (request.getSession()!=null&&request.getSession().getSessionId() != null && !request.getSession().getSessionId().isEmpty())
+            return sessionsBySessionIdRegistry.get(request.getSession().getSessionId()).getSessionInfo();
+        else
+            return new HashMap<>();
     }
 
     public static boolean isAuth(Request<Message> request) {
@@ -47,8 +51,9 @@ public class SessionRegistry {
         return isAuth != null && isAuth.equals("true");
     }
 
-    public static void createSession(Session session) {
+    public static Session createSession(Session session) {
         sessionsBySessionIdRegistry.put(session.getSessionId(), session);
+        return session;
     }
 
     public static void close(Request<Message> request) {
