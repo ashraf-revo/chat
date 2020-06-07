@@ -43,7 +43,9 @@ public class MainController {
     private static final Consumer<Request<Message>> onLOGIN = (s) -> {
         String[] split = s.getPayload().getPayload().split(":");
         userService.findByUsernameAndPasswordMatch(split[0], split[1]).ifPresent(it ->
-                SessionRegistry.save(s, it.getUsername()));
+                SessionRegistry.save(s, it.getUsername())
+        );
+        MainController.onME.accept(s);
     };
     private static final Consumer<Request<Message>> onSEND = (s) -> {
         if (s.getPayload().getPayload().contains("-->")) {
@@ -58,9 +60,13 @@ public class MainController {
 
     private static final Consumer<Request<Message>> onME = (s) -> {
         Message message = new Message();
-        message.setStatus("200");
         message.setPath("ME");
-        message.setPayload(SessionRegistry.getUsername(s));
+        if (SessionRegistry.isAuth(s)) {
+            message.setStatus("200");
+            message.setPayload(SessionRegistry.getUsername(s));
+        } else {
+            message.setStatus("403");
+        }
         s.getSession().send(message);
     };
 
